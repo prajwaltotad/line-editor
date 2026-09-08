@@ -225,9 +225,7 @@ void findText(Document *doc, const char *search)
 }
 
 /* Replaces all occurrences of oldText with newText in one string */
-char *replaceSubstring(const char *original,
-                       const char *oldText,
-                       const char *newText)
+char *replaceSubstring(const char *original, const char *oldText, const char *newText)
 {
     int count = 0;
     const char *ptr;
@@ -324,10 +322,7 @@ char *replaceSubstring(const char *original,
 }
 
 /* Replaces a word or phrase only on the specified line */
-void replaceTextOnLine(Document *doc,
-                       int lineNumber,
-                       const char *oldText,
-                       const char *newText)
+void replaceTextOnLine(Document *doc, int lineNumber, const char *oldText, const char *newText)
 {
     /* Check whether the line number is valid */
     if (doc == NULL ||
@@ -368,9 +363,7 @@ void replaceTextOnLine(Document *doc,
 }
 
 /* Replaces a word or phrase throughout the entire document */
-void replaceText(Document *doc,
-                 const char *oldText,
-                 const char *newText)
+void replaceText(Document *doc, const char *oldText, const char *newText)
 {
     int replacements = 0;
 
