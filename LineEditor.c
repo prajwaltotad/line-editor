@@ -5,12 +5,12 @@
 #define INITIAL_CAPACITY 10
 #define MAX_LINE_LENGTH 500
 
-typedef struct {
+typedef struct
+{
     char **lines;
     int line_count;
     int capacity;
 } Document;
-
 
 /* Initializes the document and allocates memory for the line array */
 void initializeEditor(Document *doc)
@@ -27,7 +27,6 @@ void initializeEditor(Document *doc)
     }
 }
 
-
 /* Inserts a new line at the specified position */
 void insertLine(Document *doc)
 {
@@ -42,7 +41,8 @@ void insertLine(Document *doc)
         printf("Error: Invalid line number. Please enter an integer.\n");
 
         /* Clear invalid input */
-        while (getchar() != '\n');
+        while (getchar() != '\n')
+            ;
 
         return;
     }
@@ -62,7 +62,6 @@ void insertLine(Document *doc)
     /* Remove newline added by fgets() */
     text[strcspn(text, "\n")] = '\0';
 
-
     /* Increase capacity if the array is full */
     if (doc->line_count == doc->capacity)
     {
@@ -70,8 +69,7 @@ void insertLine(Document *doc)
 
         char **temp = realloc(
             doc->lines,
-            new_capacity * sizeof(char *)
-        );
+            new_capacity * sizeof(char *));
 
         if (temp == NULL)
         {
@@ -83,13 +81,11 @@ void insertLine(Document *doc)
         doc->capacity = new_capacity;
     }
 
-
     /* Shift lines to the right to create space */
     for (int i = doc->line_count; i >= position; i--)
     {
         doc->lines[i] = doc->lines[i - 1];
     }
-
 
     /* Allocate memory for the new line */
     doc->lines[position - 1] = malloc(strlen(text) + 1);
@@ -106,7 +102,6 @@ void insertLine(Document *doc)
 
     printf("Line inserted successfully.\n");
 }
-
 
 /* Deletes a line from the document */
 void deleteLine(Document *doc)
@@ -127,13 +122,13 @@ void deleteLine(Document *doc)
         printf("Error: Invalid line number. Please enter an integer.\n");
 
         /* Clear invalid input */
-        while (getchar() != '\n');
+        while (getchar() != '\n')
+            ;
 
         return;
     }
 
     getchar();
-
 
     /* Check whether the line number is valid */
     if (position < 1 || position > doc->line_count)
@@ -142,10 +137,8 @@ void deleteLine(Document *doc)
         return;
     }
 
-
     /* Free memory occupied by the selected line */
     free(doc->lines[position - 1]);
-
 
     /* Shift remaining lines to the left */
     for (int i = position - 1;
@@ -163,7 +156,6 @@ void deleteLine(Document *doc)
     printf("Line deleted successfully.\n");
 }
 
-
 /* Displays all lines of the document */
 void displayDocument(Document *doc)
 {
@@ -179,6 +171,24 @@ void displayDocument(Document *doc)
     }
 }
 
+/* Displays lines from startLine to endLine */
+void displayRange(Document *doc, int startLine, int endLine)
+{ /* Check whether the document is empty */
+    if (doc == NULL || doc->line_count == 0)
+    {
+        printf("Error: Document is empty.\n");
+        return;
+    } /* Check whether start and end line numbers are valid */
+    if (startLine < 1 || endLine < 1 || startLine > doc->line_count || endLine > doc->line_count || startLine > endLine)
+    {
+        printf("Error: Invalid line range.\n");
+        return;
+    } /* Display only the requested range */
+    for (int i = startLine - 1; i < endLine; i++)
+    {
+        printf("%d: %s\n", i + 1, doc->lines[i]);
+    }
+}
 
 /* Searches for a word or phrase in every line of the document */
 void findText(Document *doc, const char *search)
@@ -190,7 +200,6 @@ void findText(Document *doc, const char *search)
         printf("Document is empty.\n");
         return;
     }
-
 
     /* Check every line in the document */
     for (int i = 0; i < doc->line_count; i++)
@@ -208,14 +217,12 @@ void findText(Document *doc, const char *search)
         }
     }
 
-
     /* If the text was not found anywhere */
     if (!found)
     {
         printf("\"%s\" not found in the document.\n", search);
     }
 }
-
 
 /* Replaces all occurrences of oldText with newText in one string */
 char *replaceSubstring(const char *original,
@@ -233,13 +240,11 @@ char *replaceSubstring(const char *original,
         return NULL;
     }
 
-
     /* Empty oldText is not allowed */
     if (strlen(oldText) == 0)
     {
         return NULL;
     }
-
 
     /* Count occurrences of oldText */
     ptr = original;
@@ -251,7 +256,6 @@ char *replaceSubstring(const char *original,
         /* Move forward to search for the next occurrence */
         ptr += strlen(oldText);
     }
-
 
     /*
        If oldText does not occur,
@@ -271,18 +275,15 @@ char *replaceSubstring(const char *original,
         return copy;
     }
 
-
     size_t oldLen = strlen(oldText);
     size_t newLen = strlen(newText);
     size_t originalLen = strlen(original);
-
 
     /*
        Calculate the memory required for the new string.
     */
     size_t resultLen =
         originalLen + count * (newLen - oldLen);
-
 
     /* Allocate memory for the new string */
     char *result = malloc(resultLen + 1);
@@ -292,10 +293,8 @@ char *replaceSubstring(const char *original,
         return NULL;
     }
 
-
     char *dest = result;
     const char *src = original;
-
 
     /* Construct the new string */
     while (*src != '\0')
@@ -318,13 +317,11 @@ char *replaceSubstring(const char *original,
         }
     }
 
-
     /* Add null terminator */
     *dest = '\0';
 
     return result;
 }
-
 
 /* Replaces a word or phrase only on the specified line */
 void replaceTextOnLine(Document *doc,
@@ -341,7 +338,6 @@ void replaceTextOnLine(Document *doc,
         return;
     }
 
-
     /* Check whether the text to replace is empty */
     if (oldText == NULL || strlen(oldText) == 0)
     {
@@ -349,14 +345,11 @@ void replaceTextOnLine(Document *doc,
         return;
     }
 
-
     /* Create a new line with the replacement */
     char *newLine = replaceSubstring(
         doc->lines[lineNumber - 1],
         oldText,
-        newText
-    );
-
+        newText);
 
     if (newLine == NULL)
     {
@@ -364,10 +357,8 @@ void replaceTextOnLine(Document *doc,
         return;
     }
 
-
     /* Free the old line */
     free(doc->lines[lineNumber - 1]);
-
 
     /* Store the newly created line */
     doc->lines[lineNumber - 1] = newLine;
@@ -375,7 +366,6 @@ void replaceTextOnLine(Document *doc,
     printf("Replacement completed on line %d.\n",
            lineNumber);
 }
-
 
 /* Replaces a word or phrase throughout the entire document */
 void replaceText(Document *doc,
@@ -390,7 +380,6 @@ void replaceText(Document *doc,
         return;
     }
 
-
     /* Check whether the text to replace is empty */
     if (oldText == NULL || strlen(oldText) == 0)
     {
@@ -398,16 +387,13 @@ void replaceText(Document *doc,
         return;
     }
 
-
     /* Go through every line */
     for (int i = 0; i < doc->line_count; i++)
     {
         char *newLine = replaceSubstring(
             doc->lines[i],
             oldText,
-            newText
-        );
-
+            newText);
 
         if (newLine == NULL)
         {
@@ -417,22 +403,18 @@ void replaceText(Document *doc,
             continue;
         }
 
-
         /* Check whether the line actually changed */
         if (strcmp(doc->lines[i], newLine) != 0)
         {
             replacements++;
         }
 
-
         /* Free the old line */
         free(doc->lines[i]);
-
 
         /* Store the new line */
         doc->lines[i] = newLine;
     }
-
 
     if (replacements == 0)
     {
@@ -444,7 +426,6 @@ void replaceText(Document *doc,
     }
 }
 
-
 /* Frees all dynamically allocated memory used by the document */
 void freeDocument(Document *doc)
 {
@@ -453,17 +434,14 @@ void freeDocument(Document *doc)
         return;
     }
 
-
     /* Free every individual line */
     for (int i = 0; i < doc->line_count; i++)
     {
         free(doc->lines[i]);
     }
 
-
     /* Free the dynamic array of pointers */
     free(doc->lines);
-
 
     /* Reset the document */
     doc->lines = NULL;
@@ -471,28 +449,18 @@ void freeDocument(Document *doc)
     doc->capacity = 0;
 }
 
-
-/* Main function controls the line editor */
-int main()
+/* Main function controls the line editor */ int main()
 {
     Document doc;
-
     char command;
-
     char search[MAX_LINE_LENGTH];
     char oldText[MAX_LINE_LENGTH];
     char newText[MAX_LINE_LENGTH];
-
-    int lineNumber;
-
-
-    /* Initialize the document */
+    int lineNumber; /* Variables for display range */
+    int startLine;
+    int endLine; /* Initialize the document */
     initializeEditor(&doc);
-
-
     printf("===== NEXUS LINE EDITOR =====\n");
-
-
     while (1)
     {
         printf("\n");
@@ -500,167 +468,107 @@ int main()
         printf("I - Insert line\n");
         printf("D - Delete line\n");
         printf("P - Display document\n");
+        printf("G - Display range of lines\n");
         printf("F - Find text\n");
         printf("R - Replace text\n");
         printf("Q - Quit\n");
-
-
         printf("\nEnter command: ");
-
         scanf(" %c", &command);
-        getchar();
-
-
-        /* Convert lowercase command to uppercase */
+        getchar(); /* Convert lowercase command to uppercase */
         if (command >= 'a' && command <= 'z')
         {
             command = command - 'a' + 'A';
-        }
-
-
-        /*
-           Check whether the entered command
-           is one of the specified commands.
-        */
-        if (command != 'I' &&
-            command != 'D' &&
-            command != 'P' &&
-            command != 'F' &&
-            command != 'R' &&
-            command != 'Q')
+        } /* Check whether the entered command is one of the specified commands. */
+        if (command != 'I' && command != 'D' && command != 'P' && command != 'G' && command != 'F' && command != 'R' && command != 'Q')
         {
             printf("Error: Invalid command.\n");
-            printf("Please enter I, D, P, F, R, or Q.\n");
-
+            printf("Please enter I, D, P, G, F, R, or Q.\n");
             continue;
         }
-
-
         switch (command)
-        {
-            /* Insert */
-            case 'I':
-                insertLine(&doc);
+        { /* Insert */
+        case 'I':
+            insertLine(&doc);
+            break; /* Delete */
+        case 'D':
+            deleteLine(&doc);
+            break; /* Display entire document */
+        case 'P':
+            displayDocument(&doc);
+            break; /* Display a specific range of lines */
+        case 'G':
+            printf("Enter start line: ");
+            if (scanf("%d", &startLine) != 1)
+            {
+                printf("Error: Invalid line number. "
+                       "Please enter an integer.\n");
+                while (getchar() != '\n')
+                    ;
                 break;
-
-
-            /* Delete */
-            case 'D':
-                deleteLine(&doc);
+            }
+            printf("Enter end line: ");
+            if (scanf("%d", &endLine) != 1)
+            {
+                printf("Error: Invalid line number. "
+                       "Please enter an integer.\n");
+                while (getchar() != '\n')
+                    ;
                 break;
-
-
-            /* Display */
-            case 'P':
-                displayDocument(&doc);
+            }
+            getchar(); /* Display the requested range */
+            displayRange(&doc, startLine, endLine);
+            break; /* Find */
+        case 'F':
+            printf("Enter text to find: ");
+            fgets(search, MAX_LINE_LENGTH, stdin);
+            search[strcspn(search, "\n")] = '\0';
+            if (strlen(search) == 0)
+            {
+                printf("Error: Search text cannot be empty.\n");
                 break;
-
-
-            /* Find */
-            case 'F':
-
-                printf("Enter text to find: ");
-
-                fgets(search, MAX_LINE_LENGTH, stdin);
-
-                search[strcspn(search, "\n")] = '\0';
-
-
-                if (strlen(search) == 0)
-                {
-                    printf("Error: Search text cannot be empty.\n");
-                    break;
-                }
-
-
-                findText(&doc, search);
-
+            }
+            findText(&doc, search);
+            break; /* Replace */
+        case 'R':
+            printf("Enter line number (0 for entire document): ");
+            if (scanf("%d", &lineNumber) != 1)
+            {
+                printf("Error: Invalid line number. "
+                       "Please enter an integer.\n");
+                while (getchar() != '\n')
+                    ;
                 break;
-
-
-            /* Replace */
-            case 'R':
-
-                printf("Enter line number (0 for entire document): ");
-
-                if (scanf("%d", &lineNumber) != 1)
-                {
-                    printf("Error: Invalid line number. "
-                           "Please enter an integer.\n");
-
-                    while (getchar() != '\n');
-
-                    break;
-                }
-
-                getchar();
-
-
-                /*
-                   0 means replace throughout
-                   the entire document.
-                */
-                if (lineNumber < 0 ||
-                    lineNumber > doc.line_count)
-                {
-                    printf("Error: Invalid line number.\n");
-                    break;
-                }
-
-
-                printf("Enter text to replace: ");
-
-                fgets(oldText, MAX_LINE_LENGTH, stdin);
-
-                oldText[strcspn(oldText, "\n")] = '\0';
-
-
-                if (strlen(oldText) == 0)
-                {
-                    printf("Error: Text to replace cannot be empty.\n");
-                    break;
-                }
-
-
-                printf("Enter new text: ");
-
-                fgets(newText, MAX_LINE_LENGTH, stdin);
-
-                newText[strcspn(newText, "\n")] = '\0';
-
-
-                if (lineNumber == 0)
-                {
-                    /* Replace throughout the document */
-                    replaceText(
-                        &doc,
-                        oldText,
-                        newText
-                    );
-                }
-                else
-                {
-                    /* Replace only on the specified line */
-                    replaceTextOnLine(
-                        &doc,
-                        lineNumber,
-                        oldText,
-                        newText
-                    );
-                }
-
+            }
+            getchar(); /* 0 means replace throughout the entire document. */
+            if (lineNumber < 0 || lineNumber > doc.line_count)
+            {
+                printf("Error: Invalid line number.\n");
                 break;
-
-
-            /* Quit */
-            case 'Q':
-
-                /* Free all dynamically allocated memory */
-                freeDocument(&doc);
-
-                printf("Exiting editor...\n");
-
-                return 0;
+            }
+            printf("Enter text to replace: ");
+            fgets(oldText, MAX_LINE_LENGTH, stdin);
+            oldText[strcspn(oldText, "\n")] = '\0';
+            if (strlen(oldText) == 0)
+            {
+                printf("Error: Text to replace cannot be empty.\n");
+                break;
+            }
+            printf("Enter new text: ");
+            fgets(newText, MAX_LINE_LENGTH, stdin);
+            newText[strcspn(newText, "\n")] = '\0';
+            if (lineNumber == 0)
+            { /* Replace throughout the document */
+                replaceText(&doc, oldText, newText);
+            }
+            else
+            { /* Replace only on the specified line */
+                replaceTextOnLine(&doc, lineNumber, oldText, newText);
+            }
+            break; /* Quit */
+        case 'Q':  /* Free all dynamically allocated memory */
+            freeDocument(&doc);
+            printf("Exiting editor...\n");
+            return 0;
         }
     }
 }
