@@ -1,16 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#define INITIAL_CAPACITY 10
-#define MAX_LINE_LENGTH 500
-
-typedef struct {
-    char **lines;
-    int line_count;
-    int capacity;
-} Document;
-
+/* Initializes the document and allocates memory for the line array */
 void initializeEditor(Document *doc)
 {
     doc->line_count = 0;
@@ -20,59 +8,77 @@ void initializeEditor(Document *doc)
 
     if (doc->lines == NULL)
     {
-        printf("Memory allocation failed.\n");
+        printf("Error: Memory allocation failed.\n");
         exit(1);
     }
 }
 
+/* Inserts a new line at the specified position */
 void insertLine(Document *doc)
 {
     int position;
     char text[MAX_LINE_LENGTH];
 
     printf("Enter line number to insert: ");
-    scanf("%d", &position);
-    getchar();  
 
+    /* Check whether the user entered a valid integer */
+    if (scanf("%d", &position) != 1)
+    {
+        printf("Error: Invalid line number. Please enter an integer.\n");
+
+        /* Clear invalid input */
+        while (getchar() != '\n')
+            ;
+
+        return;
+    }
+
+    getchar();
+
+    /* Check whether the position is valid */
     if (position < 1 || position > doc->line_count + 1)
     {
-        printf("Invalid line number.\n");
+        printf("Error: Invalid line number.\n");
         return;
     }
 
     printf("Enter text: ");
     fgets(text, MAX_LINE_LENGTH, stdin);
 
+    /* Remove newline added by fgets() */
     text[strcspn(text, "\n")] = '\0';
 
+    /* Increase capacity if the array is full */
     if (doc->line_count == doc->capacity)
     {
-        doc->capacity *= 2;
+        int new_capacity = doc->capacity * 2;
 
         char **temp = realloc(
             doc->lines,
-            doc->capacity * sizeof(char *)
-        );
+            new_capacity * sizeof(char *));
 
         if (temp == NULL)
         {
-            printf("Memory allocation failed.\n");
+            printf("Error: Memory allocation failed.\n");
             return;
         }
 
         doc->lines = temp;
+        doc->capacity = new_capacity;
     }
 
+    /* Shift lines to the right to create space */
     for (int i = doc->line_count; i >= position; i--)
     {
         doc->lines[i] = doc->lines[i - 1];
     }
 
+    /* Allocate memory for the new line */
     doc->lines[position - 1] = malloc(strlen(text) + 1);
 
     if (doc->lines[position - 1] == NULL)
     {
-        printf("Memory allocation failed.\n");
+        printf("Error: Memory allocation failed.\n");
         return;
     }
 
@@ -83,28 +89,55 @@ void insertLine(Document *doc)
     printf("Line inserted successfully.\n");
 }
 
+/* Deletes a line from the document */
 void deleteLine(Document *doc)
 {
     int position;
 
-    printf("Enter line number to delete: ");
-    scanf("%d", &position);
-    getchar();
-
-    if (position < 1 || position > doc->line_count)
+    if (doc == NULL || doc->line_count == 0)
     {
-        printf("Invalid line number.\n");
+        printf("Error: Document is empty.\n");
         return;
     }
 
+    printf("Enter line number to delete: ");
+
+    /* Check whether the user entered a valid integer */
+    if (scanf("%d", &position) != 1)
+    {
+        printf("Error: Invalid line number. Please enter an integer.\n");
+
+        /* Clear invalid input */
+        while (getchar() != '\n')
+            ;
+
+        return;
+    }
+
+    getchar();
+
+    /* Check whether the line number is valid */
+    if (position < 1 || position > doc->line_count)
+    {
+        printf("Error: Invalid line number.\n");
+        return;
+    }
+
+    /* Free memory occupied by the selected line */
     free(doc->lines[position - 1]);
 
-    for (int i = position - 1; i < doc->line_count - 1; i++)
+    /* Shift remaining lines to the left */
+    for (int i = position - 1;
+         i < doc->line_count - 1;
+         i++)
     {
         doc->lines[i] = doc->lines[i + 1];
     }
 
     doc->line_count--;
+
+    /* Set the unused pointer to NULL */
+    doc->lines[doc->line_count] = NULL;
 
     printf("Line deleted successfully.\n");
 }
