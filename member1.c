@@ -9,7 +9,6 @@ void findText(Document *doc, const char *search)
         return;
     }
 
-
     /* Check every line in the document */
     for (int i = 0; i < doc->line_count; i++)
     {
@@ -26,14 +25,12 @@ void findText(Document *doc, const char *search)
         }
     }
 
-
     /* If the text was not found anywhere */
     if (!found)
     {
         printf("\"%s\" not found in the document.\n", search);
     }
 }
-
 
 /* Replaces all occurrences of oldText with newText in one string */
 char *replaceSubstring(const char *original,
@@ -51,13 +48,11 @@ char *replaceSubstring(const char *original,
         return NULL;
     }
 
-
     /* Empty oldText is not allowed */
     if (strlen(oldText) == 0)
     {
         return NULL;
     }
-
 
     /* Count occurrences of oldText */
     ptr = original;
@@ -69,7 +64,6 @@ char *replaceSubstring(const char *original,
         /* Move forward to search for the next occurrence */
         ptr += strlen(oldText);
     }
-
 
     /*
        If oldText does not occur,
@@ -89,18 +83,15 @@ char *replaceSubstring(const char *original,
         return copy;
     }
 
-
     size_t oldLen = strlen(oldText);
     size_t newLen = strlen(newText);
     size_t originalLen = strlen(original);
-
 
     /*
        Calculate the memory required for the new string.
     */
     size_t resultLen =
         originalLen + count * (newLen - oldLen);
-
 
     /* Allocate memory for the new string */
     char *result = malloc(resultLen + 1);
@@ -110,10 +101,8 @@ char *replaceSubstring(const char *original,
         return NULL;
     }
 
-
     char *dest = result;
     const char *src = original;
-
 
     /* Construct the new string */
     while (*src != '\0')
@@ -136,13 +125,11 @@ char *replaceSubstring(const char *original,
         }
     }
 
-
     /* Add null terminator */
     *dest = '\0';
 
     return result;
 }
-
 
 /* Replaces a word or phrase only on the specified line */
 void replaceTextOnLine(Document *doc,
@@ -159,7 +146,6 @@ void replaceTextOnLine(Document *doc,
         return;
     }
 
-
     /* Check whether the text to replace is empty */
     if (oldText == NULL || strlen(oldText) == 0)
     {
@@ -167,14 +153,11 @@ void replaceTextOnLine(Document *doc,
         return;
     }
 
-
     /* Create a new line with the replacement */
     char *newLine = replaceSubstring(
         doc->lines[lineNumber - 1],
         oldText,
-        newText
-    );
-
+        newText);
 
     if (newLine == NULL)
     {
@@ -182,10 +165,8 @@ void replaceTextOnLine(Document *doc,
         return;
     }
 
-
     /* Free the old line */
     free(doc->lines[lineNumber - 1]);
-
 
     /* Store the newly created line */
     doc->lines[lineNumber - 1] = newLine;
@@ -193,7 +174,6 @@ void replaceTextOnLine(Document *doc,
     printf("Replacement completed on line %d.\n",
            lineNumber);
 }
-
 
 /* Replaces a word or phrase throughout the entire document */
 void replaceText(Document *doc,
@@ -208,7 +188,6 @@ void replaceText(Document *doc,
         return;
     }
 
-
     /* Check whether the text to replace is empty */
     if (oldText == NULL || strlen(oldText) == 0)
     {
@@ -216,16 +195,13 @@ void replaceText(Document *doc,
         return;
     }
 
-
     /* Go through every line */
     for (int i = 0; i < doc->line_count; i++)
     {
         char *newLine = replaceSubstring(
             doc->lines[i],
             oldText,
-            newText
-        );
-
+            newText);
 
         if (newLine == NULL)
         {
@@ -235,22 +211,18 @@ void replaceText(Document *doc,
             continue;
         }
 
-
         /* Check whether the line actually changed */
         if (strcmp(doc->lines[i], newLine) != 0)
         {
             replacements++;
         }
 
-
         /* Free the old line */
         free(doc->lines[i]);
-
 
         /* Store the new line */
         doc->lines[i] = newLine;
     }
-
 
     if (replacements == 0)
     {
@@ -262,7 +234,6 @@ void replaceText(Document *doc,
     }
 }
 
-
 /* Frees all dynamically allocated memory used by the document */
 void freeDocument(Document *doc)
 {
@@ -271,17 +242,14 @@ void freeDocument(Document *doc)
         return;
     }
 
-
     /* Free every individual line */
     for (int i = 0; i < doc->line_count; i++)
     {
         free(doc->lines[i]);
     }
 
-
     /* Free the dynamic array of pointers */
     free(doc->lines);
-
 
     /* Reset the document */
     doc->lines = NULL;
