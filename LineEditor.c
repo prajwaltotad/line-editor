@@ -449,7 +449,8 @@ void freeDocument(Document *doc)
     doc->capacity = 0;
 }
 
-/* Main function controls the line editor */ int main()
+/* Main function controls the line editor */ 
+int main()
 {
     Document doc;
     char command;
